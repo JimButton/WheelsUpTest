@@ -7,10 +7,14 @@ import wheelsUp.enums.MainMenuOptions;
 import wheelsUp.enums.SecondLevelMenuItems;
 import wheelsUp.forms.CoreMembershipPage;
 import wheelsUp.forms.MainPage;
+import wheelsUp.forms.RequestInfoForm;
+import wheelsUp.models.UserInfo;
 
 public class WheelUpTest extends BaseTest {
     private final MainPage mainPage = new MainPage();
     private final CoreMembershipPage coreMembershipPage = new CoreMembershipPage();
+    private final RequestInfoForm requestInfoForm = new RequestInfoForm();
+
     private static final String REQUEST_INFO = "request-info";
 
     @Test
@@ -28,6 +32,12 @@ public class WheelUpTest extends BaseTest {
         Assert.assertTrue(coreMembershipPage.state().waitForDisplayed(), "Core Membership page is not opened");
         coreMembershipPage.enterUserData("Dmitry", "Test");
         Assert.assertTrue(getBrowser().getCurrentUrl().contains(REQUEST_INFO), String.format("Url is not contain %s", REQUEST_INFO));
-
+        Assert.assertTrue(requestInfoForm.state().waitForDisplayed(), "Request Info page is not opened");
+        UserInfo userInfo = new UserInfo("Dmitry", "Test");
+        requestInfoForm.fillUserData(userInfo);
+        requestInfoForm.selectRandomPrivateFlights();
+        requestInfoForm.selectRandomTravelOption();
+        requestInfoForm.selectRandomLeadSource();
+        requestInfoForm.clickClose();
     }
 }
