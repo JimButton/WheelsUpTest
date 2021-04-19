@@ -6,15 +6,15 @@
 
   "driverSettings": {
     "chrome": {
-      "webDriverVersion": "89.0.4389.23",
+      "webDriverVersion": "latest",
       "capabilities": {
-        "enableVNC": false
+        "enableVNC": true
       },
       "options": {
         "intl.accept_languages": "en",
-        "safebrowsing.enabled": "false",
+        "safebrowsing.enabled": "true",
         "profile.default_content_settings.popups": "0",
-        "disable-popup-blocking": "false",
+        "disable-popup-blocking": "true",
         "download.prompt_for_download": "false",
         "download.default_directory": "//home//selenium//downloads"
       },

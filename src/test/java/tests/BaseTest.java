@@ -18,8 +18,6 @@ public abstract class BaseTest {
 
     protected BaseTest() {
         elementFactory = AqualityServices.getElementFactory();
-        getBrowser().setPageLoadTimeout(Duration.ofSeconds(360));
-        //getBrowser().setImplicitWaitTimeout(Duration.ofSeconds(60));
     }
 
     @BeforeMethod
