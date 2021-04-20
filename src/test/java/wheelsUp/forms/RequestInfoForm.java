@@ -1,21 +1,23 @@
 package wheelsUp.forms;
 
 
-import aquality.selenium.browser.JavaScript;
 import aquality.selenium.elements.interfaces.IButton;
 import aquality.selenium.elements.interfaces.ILabel;
 import aquality.selenium.elements.interfaces.ITextBox;
 import aquality.selenium.forms.Form;
 import org.openqa.selenium.By;
+import wheelsUp.enums.*;
 import wheelsUp.models.UserInfo;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 public class RequestInfoForm extends Form {
     private final static String DROPDOWN_ITEM = "//li[contains(@class, 'dropdown-box-items') and normalize-space(.) = '%s']";
+    private final static String TRAVEL_WITH_PETS_TEMPLATE = "//div[contains(@id, 'travel_with_pets')]//label[normalize-space(.) = '%s']";
+    private final static String LEAD_CURRENTLY_TRAVEL_TEMPLATE = "//div[contains(@id, 'currently_Travel')]//label[normalize-space(.) = '%s']";
+    private final static String PRODUCT_INTEREST_TEMPLATE = "//div[contains(@id, 'Product_Interest')]//label[normalize-space(.) = '%s']";
+
     private final ITextBox tbxFirstName = getElementFactory().getTextBox(By.xpath("//input[contains(@id, 'FirstName')]"), "First Name");
     private final ITextBox tbxLastName = getElementFactory().getTextBox(By.xpath("//input[contains(@id, 'LastName')]"), "Last Name");
     private final ITextBox tbxEmail = getElementFactory().getTextBox(By.xpath("//input[contains(@id, 'Email')]"), "Email");
@@ -26,19 +28,22 @@ public class RequestInfoForm extends Form {
     private final ITextBox tbxZipCode = getElementFactory().getTextBox(By.xpath("//input[contains(@id, 'PostalCode')]"), "Zip Code");
     private final ITextBox tbxState = getElementFactory().getTextBox(By.xpath("//input[contains(@id, 'State')]"), "State");
     private final ITextBox tbxCountry = getElementFactory().getTextBox(By.xpath("//input[contains(@id, 'Country')]"), "Country");
+    private final ITextBox tbxComment = getElementFactory().getTextBox(By.xpath("//div[contains(@id, 'WebFormComment')]//textarea"), "Comment");
     private final ILabel lblSecondHome = getElementFactory().getLabel(By.xpath("//div[contains(@id, 'Do_you_own')]//div[contains(@class, 'text-select')]//p"),
             "Do you own or travel to a second home?");
     private final ILabel lblPrivateFlights = getElementFactory().getLabel(By.xpath("//div[contains(@id, 'How_Many_Private')]//div[contains(@class, 'text-select')]//p"),
             "How many private flights do you take a year?");
     private final ILabel lblLeadSourceWebList = getElementFactory().getLabel(By.xpath("//div[contains(@id, 'leadSourceWebList')]//div[contains(@class, 'text-select')]//p"),
             "How did you hear about us?");
+
+
     private final IButton btnClose = getElementFactory().getButton(By.xpath("//div[contains(@aria-labelledby, 'btnMenu')]//i[contains(@class, 'icon-close')]"), "Close");
 
     public RequestInfoForm() {
         super(By.xpath("//div[contains(@class, 'RequestInfo')]"), "Request Info");
     }
 
-    public void fillUserData(UserInfo userInfo){
+    public void fillUserData(UserInfo userInfo) {
         tbxFirstName.clearAndType(userInfo.getFirstName());
         tbxLastName.clearAndType(userInfo.getLastName());
         tbxEmail.clearAndType(userInfo.getEmail());
@@ -51,88 +56,36 @@ public class RequestInfoForm extends Form {
         tbxCountry.clearAndType(userInfo.getCountry());
     }
 
-    public void selectRandomTravelOption(){
-        lblSecondHome.getJsActions().scrollIntoView();
-        lblSecondHome.clickAndWait();
-        String randomOption = TravelOption.getValues().get(new Random().nextInt(TravelOption.getValues().size()));
-        getElementFactory().getLabel(By.xpath(String.format(DROPDOWN_ITEM, randomOption)), randomOption).clickAndWait();
+    public void selectRandomFlightOptions() {
+        selectRandomOption(lblSecondHome, TravelOption.getValues());
+        selectRandomOption(lblPrivateFlights, PrivateFlight.getValues());
+        selectRandomOption(lblLeadSourceWebList, LeadSource.getValues());
+        clickRandomRadioBtnOption(TravelWithPetsOption.getValues(), TRAVEL_WITH_PETS_TEMPLATE);
+        clickRandomRadioBtnOption(LeadCurrentlyTravel.getValues(), LEAD_CURRENTLY_TRAVEL_TEMPLATE);
+        clickRandomRadioBtnOption(MembershipType.getValues(), PRODUCT_INTEREST_TEMPLATE);
     }
 
-    public void selectRandomPrivateFlights(){
-        lblPrivateFlights.clickAndWait();
-        String randomOption = PrivateFlight.getValues().get(new Random().nextInt(PrivateFlight.getValues().size()));
-        getElementFactory().getLabel(By.xpath(String.format(DROPDOWN_ITEM, randomOption)), randomOption).clickAndWait();
+    private void selectRandomOption(ILabel lblSelect, List<String> values) {
+        lblSelect.getJsActions().scrollToTheCenter();
+        lblSelect.clickAndWait();
+        String randomOption = values.get(new Random().nextInt(values.size()));
+        ILabel lblRandomOption = getElementFactory().getLabel(By.xpath(String.format(DROPDOWN_ITEM, randomOption)), randomOption);
+        lblRandomOption.getJsActions().scrollToTheCenter();
+        lblRandomOption.getJsActions().clickAndWait();
     }
 
-    public void selectRandomLeadSource(){
-        lblLeadSourceWebList.getJsActions().scrollIntoView();
-        lblLeadSourceWebList.clickAndWait();
-        String randomOption = LeadSource.getValues().get(new Random().nextInt(LeadSource.getValues().size()));
-        getElementFactory().getLabel(By.xpath(String.format(DROPDOWN_ITEM, randomOption)), randomOption).clickAndWait();
+    private void clickRandomRadioBtnOption(List<String> values, String template) {
+        String randomOption = values.get(new Random().nextInt(values.size()));
+        ILabel lblRandomOption = getElementFactory().getLabel(By.xpath(String.format(template, randomOption)), randomOption);
+        lblRandomOption.getJsActions().scrollToTheCenter();
+        lblRandomOption.clickAndWait();
     }
 
-    public void clickClose(){
+    public void fillCommentArea(String comment) {
+        tbxComment.clearAndType(comment);
+    }
+
+    public void clickClose() {
         btnClose.clickAndWait();
-    }
-
-    enum TravelOption{
-        YES("Yes"),
-        NO("No");
-
-        String option;
-
-        TravelOption(String option){
-            this.option = option;
-        }
-
-        public String getOption() {
-            return option;
-        }
-
-        public static List<String> getValues() {
-           return Arrays.stream(TravelOption.values()).map(TravelOption::getOption).collect(Collectors.toList());
-        }
-    }
-
-    enum PrivateFlight{
-        ZERO("0"),
-        ONE_FIVE("1-5"),
-        FIVE_TEN("5-10"),
-        MORE_THEN_TEN("10+");
-
-        String option;
-
-        PrivateFlight(String option){
-            this.option = option;
-        }
-
-        public String getOption() {
-            return option;
-        }
-
-        public static List<String> getValues() {
-            return Arrays.stream(TravelOption.values()).map(TravelOption::getOption).collect(Collectors.toList());
-        }
-    }
-
-    enum LeadSource{
-        AMEX("AMEX"),
-        Airport("Airport"),
-        In_The_News("In The News"),
-        Partner_Companies("Partner Companies");
-
-        String option;
-
-        LeadSource(String option){
-            this.option = option;
-        }
-
-        public String getOption() {
-            return option;
-        }
-
-        public static List<String> getValues() {
-            return Arrays.stream(TravelOption.values()).map(TravelOption::getOption).collect(Collectors.toList());
-        }
     }
 }

@@ -8,7 +8,7 @@ public enum MainMenuOptions {
 
     String value;
 
-    MainMenuOptions(String value){
+    MainMenuOptions(String value) {
         this.value = value;
     }
 
