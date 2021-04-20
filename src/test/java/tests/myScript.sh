@@ -1,6 +1,6 @@
 #!/bin/bash
-mkdir myFolder
-cd myFolder
+mkdir myFiles
+cd myFiles
 for i in {1..7}; do touch testFile${i}.txt; done
 rm -v $(ls -t testFile*.txt | tail -n +4)
 ls -t
